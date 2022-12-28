@@ -2,10 +2,8 @@
 
 ## todo
 
-[] initialization file
-  - [] config file for database location
-  - [] seed with entries
-  - [] create cli api
+[] config file for database location
+[] control bitrate and size of sound files
 
 ## Table schema
 
@@ -13,25 +11,9 @@
 
 Name: `numbers`
 
-| keys    | type                  | related to |
-| :-----  | :-------------------- | :--------- |
-| id      | `INTEGER PRIMARY KEY` |            |
-| number  | `INTEGER`             |            |
-
-### Phone number sounds
-
-Name: `sound`
-
-| keys    | type                  | related to |
-| :-----  | :-------------------- | :--------- |
-| id      | `INTEGER PRIMARY KEY` | entries.id |
-| sound   | `BLOB`                |            |
-
-### Phone number descriptions
-
-Name: `descriptions`
-
 | keys         | type                  | related to |
 | :-----       | :-------------------- | :--------- |
-| id           | `INTEGER PRIMARY KEY` | entries.id |
+| id           | `INTEGER PRIMARY KEY` |            |
+| number       | `UNIQUE INTEGER`      |            |
+| sound        | `BLOB`                |            |
 | description  | `TEXT`                |            |
