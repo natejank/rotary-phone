@@ -4,6 +4,7 @@
 
 [] config file for database location
 [] control bitrate and size of sound files
+[] store sound filename
 
 ## Table schema
 
