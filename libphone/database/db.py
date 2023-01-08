@@ -1,4 +1,5 @@
 from os import PathLike
+from typing import Union
 from sqlite3 import Cursor
 
 """
@@ -22,7 +23,7 @@ def table_exists(cursor: Cursor, name: str):
     return len(cursor.fetchall()) != 0
 
 
-def create_entry(cursor: Cursor, number: int, sound: PathLike | str, description='') -> None:
+def create_entry(cursor: Cursor, number: int, sound: Union[PathLike, str], description='') -> None:
     """
     Creates a database entry for a phone number
 
@@ -33,11 +34,11 @@ def create_entry(cursor: Cursor, number: int, sound: PathLike | str, description
     """
     # TODO control bitrate and size of sound files
     cursor.execute(
-        'INSERT INTO numbers(number, sound, description) VALUES (?, ?, ?)',
-        (number, file_to_blob(sound), description))
+        'INSERT INTO numbers(number, sound, filename, description) VALUES (?, ?, ?, ?)',
+        (number, file_to_blob(sound), str(sound), description))
 
 
-def file_to_blob(path: PathLike | str) -> bytes:
+def file_to_blob(path: Union[PathLike, str]) -> bytes:
     """
     Open a file as a binary blob, and get the contents
 

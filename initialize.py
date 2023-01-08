@@ -46,7 +46,8 @@ if __name__ == '__main__':
         cursor.execute('''CREATE TABLE numbers (
                             id INTEGER PRIMARY KEY, 
                             number INTEGER UNIQUE, 
-                            sound BLOB, 
+                            sound BLOB,
+                            filename TEXT,
                             description TEXT
                             )''')
 
