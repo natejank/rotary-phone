@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <?php
     // TODO acquire db location from config file
-    
+
     // global notification variable
     $notify = "";
+
+    function sanitize_html($content) {
+        // sanitize user input to prevent XSS
+        return htmlentities($content, ENT_QUOTES);
+    }
 
     function phone_entry($number, $filename, $description) {
         $sound_url = "sound.php?number=$number";
@@ -22,7 +27,9 @@
     // form handling
     if (isset($_POST['delete'])) {
         // we're deleting an entry
-        $number = $_POST['delete'];
+
+        // strip html tags to prevent XSS when we display to user
+        $number = sanitize_html($_POST['delete']);
         try {
             // connect to database
             $db = new SQLite3('phone.db', SQLITE3_OPEN_READWRITE);
@@ -91,7 +98,7 @@
                     // loop until we have no more query results
                     while ($row = $entries->fetchArray()) {
                         // create a table row for each phone number
-                        phone_entry($row['number'], $row['filename'], $row['description']);
+                        phone_entry(sanitize_html($row['number']), sanitize_html($row['filename']), sanitize_html($row['description']));
                     }
 
                     // close db connection
