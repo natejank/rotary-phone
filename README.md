@@ -4,7 +4,6 @@
 
 [] config file for database location
 [] control bitrate and size of sound files
-[] store sound filename
 
 ## Table schema
 
@@ -17,4 +16,5 @@ Name: `numbers`
 | id           | `INTEGER PRIMARY KEY` |            |
 | number       | `UNIQUE INTEGER`      |            |
 | sound        | `BLOB`                |            |
+| filename     | `TEXT`                |            |
 | description  | `TEXT`                |            |
