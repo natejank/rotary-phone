@@ -6,11 +6,11 @@
     <title>Payphone Dashboard</title>
     <?php
     function phone_entry($number, $filename, $description) {
-        $sound_code = "sound_" . $number;
+        $sound_url = "sound.php?number=$number";
         echo <<< HTML
         <tr>
             <td>$number</td>
-            <td><form action="" method="GET"><input type="submit" name="$sound_code" value="$filename"></form></td>
+            <td><a href="$sound_url">$filename</a></td>
             <td>$description</td>
             <td>
                 <form action="" method="POST"><input type="submit" name="$number" value="delete"></form>
