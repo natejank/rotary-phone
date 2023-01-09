@@ -6,14 +6,14 @@
     <title>Payphone Dashboard</title>
     <?php
     function phone_entry($number, $filename, $description) {
-        $sound_url = "/sound.php?" . $number;
+        $sound_code = "sound_" . $number;
         echo <<< HTML
         <tr>
             <td>$number</td>
-            <td><a href="$sound_url">$filename</a></td>
+            <td><form action="" method="GET"><input type="submit" name="$sound_code" value="$filename"></form></td>
             <td>$description</td>
             <td>
-                <form><input type="submit" value="delete"></form>
+                <form action="" method="POST"><input type="submit" name="$number" value="delete"></form>
             </td>
         </tr>
         HTML;
@@ -22,6 +22,10 @@
 </head>
 
 <body>
+    <?php
+    print_r($_POST);
+    print_r($_GET);
+    ?>
     <div id="title-block" class="title-block">
         <h1>Payphone Dashboard</h1>
     </div>
@@ -48,11 +52,11 @@
             </tbody>
         </table>
         <h3>Add Entry</h3>
-        <form action="/" method="POST" enctype="multipart/form-data" border="1">
-            <input value="Phone Number" type="text">
-            <input value="Sound" type="file">
-            <input value="Description" type="text">
-            <input value="submit" type="submit">
+        <form action="" method="POST" enctype="multipart/form-data">
+            <input type="text" name="number" placeholder="Phone Number" pattern="^[0-9]+$" minlength=0 maxlength=10>
+            <input type="file" name="sound">
+            <input type="text" name="description" placeholder="Description">
+            <input type="submit" name="submit" value="submit">
         </form>
     </div>
 </body>
