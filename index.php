@@ -1,10 +1,5 @@
 <!DOCTYPE html>
-
-<head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Payphone Dashboard</title>
-    <?php
+<?php
     function phone_entry($number, $filename, $description) {
         $sound_url = "sound.php?number=$number";
         echo <<< HTML
@@ -18,7 +13,12 @@
         </tr>
         HTML;
     }
-    ?>
+?>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Payphone Dashboard</title>
 </head>
 
 <body>
@@ -42,12 +42,17 @@
             <tbody>
                 <?php
                 // TODO get location from configuration
-                $db = new SQLite3('phone.db', SQLITE3_OPEN_READONLY);
-                $entries = $db->query('SELECT number, filename, description FROM numbers ORDER BY number ASC');
-                while ($row = $entries->fetchArray()) {
-                    phone_entry($row['number'], $row['filename'], $row['description']);
+                try {
+                    $db = new SQLite3('phone.db', SQLITE3_OPEN_READONLY);
+
+                    $entries = $db->query('SELECT number, filename, description FROM numbers ORDER BY number ASC');
+                    while ($row = $entries->fetchArray()) {
+                        phone_entry($row['number'], $row['filename'], $row['description']);
+                    }
+                    $db->close();
+                } catch (Exception $e) {
+                    echo '<h2 class="error">Could not connect to database!  Please contact your System Adminstrator.</h2>';
                 }
-                $db->close();
                 ?>
             </tbody>
         </table>
