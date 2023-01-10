@@ -172,7 +172,7 @@ function create_entry()
     // make file size limit more visible
     if (!isset($file['tmp_name']) | $file['tmp_name'] === '') {
         trigger_error(
-            'Failed to recieve uploaded file.  '
+            'Failed to receive uploaded file.  '
             . 'Is your file larger than the upload size limit? '
             . 'Failed to create entry.',
             E_USER_WARNING
@@ -283,7 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'
     && empty($_FILES)
     && $_SERVER['CONTENT_LENGTH'] > 0) {
     trigger_error(
-        'Failed to recieve uploaded data!  Upload was too large.',
+        'Failed to receive uploaded data!  Upload was too large.',
         E_USER_WARNING
     );
 }
