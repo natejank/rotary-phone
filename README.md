@@ -39,8 +39,6 @@ Once all tools are installed, the development server can be run with
 
 - [] config file for database location
 - [] control bitrate and size of sound files
-- [] target and ensure compatibility with debian stable
-- [] learn how to use css and center things properly
 
 ## Database Table Schema
 

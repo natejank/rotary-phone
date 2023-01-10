@@ -321,13 +321,16 @@ try {
     // get all phone numbers, file names, and descriptions
     $entries = $db->query('SELECT number, filename, description '
         . 'FROM numbers ORDER BY substr(number, 0, 2), length(number), number ASC');
+    $has_rows = 0;
     // loop until we have no more query results
     while ($row = $entries->fetchArray()) {
         // create a table row for each phone number
+        $has_rows = 1;
         echo phone_entry(sanitize_html($row['number']),
             sanitize_html($row['filename']),
             sanitize_html($row['description']));
     }
+
 
     // close db connection
     $db->close();
@@ -337,6 +340,11 @@ try {
 ?>
         </tbody>
     </table>
+<?php
+if ($has_rows === 0) {
+    echo '<p class="note">No entries.</p>';
+}
+?>
 </div>
 <div id="new-entry-block">
     <h3>Add Entry</h3>
@@ -346,9 +354,9 @@ try {
     <input type="text" name="description" placeholder="Description">
     <button type="submit" name="create">Submit</button>
     </form>
-    <?php
+<?php
 $filesize_limit = ini_get('upload_max_filesize');
-echo "<p><i>File uploads are capped at $filesize_limit.</i></p>";
+echo "<p class=\"note\">File uploads are capped at $filesize_limit.</p>";
 ?>
 </div>
 <div id="notify-block">
