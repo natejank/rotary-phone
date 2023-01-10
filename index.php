@@ -208,7 +208,7 @@ function create_entry()
         // create a prepared statement
         $stmt = $db->prepare('INSERT INTO numbers(number, sound, filename, description) '
             . 'VALUES (:num, :sound, :filename, :desc)');
-        $stmt->bindValue(':num', $number_unsafe, SQLITE3_INTEGER);
+        $stmt->bindValue(':num', $number_unsafe, SQLITE3_TEXT);
         $stmt->bindValue(':sound', $sound_content_unsafe, SQLITE3_BLOB);
         $stmt->bindValue(':filename', $filename_unsafe, SQLITE3_TEXT);
         $stmt->bindValue(':desc', $description_unsafe, SQLITE3_TEXT);
@@ -240,7 +240,7 @@ function err($errno, $msg, $file, $line)
 {
     error_log("Processed error $errno in $file on line $line.  $msg");
     $notify = new Notifier();
-    if (!(error_reporting()&$errno)) {
+    if (!(error_reporting() & $errno)) {
         // Error code is not included in error_reporting;
         // fall back to built-in handler
         return false;
@@ -320,7 +320,7 @@ try {
 
     // get all phone numbers, file names, and descriptions
     $entries = $db->query('SELECT number, filename, description '
-        . 'FROM numbers ORDER BY number ASC');
+        . 'FROM numbers ORDER BY substr(number, 0, 2), length(number), number ASC');
     // loop until we have no more query results
     while ($row = $entries->fetchArray()) {
         // create a table row for each phone number

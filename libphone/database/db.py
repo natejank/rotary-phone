@@ -23,7 +23,7 @@ def table_exists(cursor: Cursor, name: str):
     return len(cursor.fetchall()) != 0
 
 
-def create_entry(cursor: Cursor, number: int, sound: Union[PathLike, str], description='') -> None:
+def create_entry(cursor: Cursor, number: str, sound: Union[PathLike, str], description='') -> None:
     """
     Creates a database entry for a phone number
 
@@ -49,7 +49,7 @@ def file_to_blob(path: Union[PathLike, str]) -> bytes:
         return handle.read()
 
 
-def fetch_audio(cursor: Cursor, number: int) -> bytes:
+def fetch_audio(cursor: Cursor, number: str) -> bytes:
     """
     Get audio from a database entry
 
