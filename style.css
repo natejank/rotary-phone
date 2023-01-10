@@ -6,6 +6,14 @@
     color: red;
 }
 
+.warning {
+    color: sandybrown;
+}
+
+.notice {
+    color: forestgreen;
+}
+
 #numbers-table {
     border-collapse: collapse;
 }

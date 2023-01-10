@@ -1,13 +1,35 @@
 <!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Payphone Dashboard</title>
+</head>
 <?php
     // TODO acquire db location from config file
     // TODO find a better way of globally tracking notifications
-    // TODO implement error handler to streamline error reporting
 
     /**
-     * Global notification variable
+     * Global notifications
      */
-    $notify = "";
+    class Notifier {
+        static $notifications = '';
+
+        function store($message) {
+            $this::$notifications = $message . $this::$notifications;
+        }
+
+        function get() {
+            return $this::$notifications;
+        }
+
+        function clear() {
+            $this::$notifications = '';
+        }
+
+        function has_notifications() {
+            return $this::$notifications !== '';
+        }
+    }
 
     /**
      * Escapes any "special" html characters to combat cross-site scripting.
@@ -21,10 +43,10 @@
     }
 
     /**
-     * Converts a string into an "error" tag with proper tags and styling
+     * Converts a string into an "error" tag with styling
      * 
-     * @param String $message message enclosed in error tag
-     * @return String message in error tag
+     * @param String $message message to display
+     * @return String styled message
      */
     function error_msg($message) {
         return '<h2 class="error">'
@@ -33,7 +55,32 @@
     }
 
     /**
+     * Converts a string into a "notice" tag with proper styling
+     * 
+     * @param String $message message to display
+     * @return String styled message
+     */
+    function warning_msg($message) {
+        return '<h3 class="warning">'
+                . $message
+                . '</h3>';
+    }
+
+    /**
+     * Converts a string into a "notice" tag with proper styling
+     * 
+     * @param String $message message to display
+     * @return String styled message
+     */
+    function notice_msg($message) {
+        return '<h3 class="notice">'
+                . $message
+                . '</h3>';
+    }
+
+    /**
      * Gets file contents as a binary blob
+     * TODO finish documentation here
      */
     function get_blob_contents($path) {
         $handle = fopen($path, 'rb');
@@ -67,7 +114,7 @@
      * Check if a POST request was made to delete a database entry.
      */
     function delete_entry() {
-        $notify = '';
+        $notify = new Notifier();
         // strip html tags to prevent XSS when we display to user
         $number = sanitize_html($_POST['delete']);
         try {
@@ -81,40 +128,38 @@
 
             if ($result === false) {
                 // handle errors if execution failed
-                $notify .= error_msg("Failed to delete entry $number!  Query failed.");
+                trigger_error("Query failed; did not delete entry $number.", E_USER_WARNING);
             } else {
                 // provide user feedback
-                $notify .= "<h3>Deleted entry $number!</h3>";
+                $notify->store("<h3>Deleted entry $number!</h3>");
             }
 
             // close connection
             $db->close();
         } catch (Exception $e) {
             // catch exception on DB connection and notify user
-            $notify .= error_msg(
-                "Failed to delete entry $number!  "
-                . 'Could not connect to database.  '
-                . 'Please contact your System Adminstrator.');
+            trigger_error($e->getMessage(), E_USER_ERROR);
         }
-        return $notify;
     }
 
     /**
      * Check if a POST request was made to create a database entry.
      */
     function create_entry() {
-        $notify = '';
+        $notify = new Notifier();
         // we're creating a new entry
         // TODO size constraint for files; get from config?
         // TODO file type constraints; get from config?
         $file = $_FILES['sound'];
         // make file size limit more visible
         if (! isset($file['tmp_name']) | $file['tmp_name'] === '') {
-            $notify .= error_msg('Server error!  '
-                                . 'Did not recieve the uploaded file.  '
-                                . 'Is your file larger than the upload size limit? '
-                                . 'Failed to create entry.');
-            return $notify;
+            trigger_error(
+                'Failed to recieve uploaded file.  '
+                . 'Is your file larger than the upload size limit? '
+                . 'Failed to create entry.',
+                E_USER_WARNING
+            );
+            return;
         }
         $sound_content_unsafe = get_blob_contents($file['tmp_name']);
         $number_unsafe = $_POST['number'];
@@ -128,13 +173,15 @@
 
         // validate variables
         if (!ctype_digit($number_unsafe)) {
-            $notify .= error_msg('Failed to create entry.  '
-                                . "Phone number $number may only contain numeric symbols.");
-            return $notify;
+            trigger_error('Failed to create entry. '
+                        . "Phone number $number may only contain numeric symbols.",
+                        E_USER_NOTICE);
+            return;
         } elseif (strlen($number_unsafe) > 10 | strlen($number_unsafe) < 1) {
-            $notify .= error_msg("Failed to create entry.  "
-                                . 'Length must be greater than 1 and less than 10.');
-            return $notify;
+            trigger_error('Failed to create entry.  '
+                        . 'Phone number length must be greater than 1 and less than 10.', 
+                        E_USER_NOTICE);
+            return;
         }
 
         try {
@@ -151,20 +198,75 @@
             $result = $stmt->execute();
 
             if ($result === false) {
-                $notify .= error_msg('Failed to create entry.  Query failed.');
+                trigger_error(
+                    "Query failed; did not create entry $number.  "
+                    .'Does the number already exist?', 
+                    E_USER_WARNING);
             } else {
-                $notify .= "<h3>Created entry $number</h3>";
+                $notify->store("<h3>Created entry $number</h3>");
             }
 
             // close connection
             $db->close();
         } catch (Exception $e) {
-            $notify .= error_msg('Failed to create database entry.  '
-                                . 'Could not connect to database.  '
-                                . 'Please contact your System Administrator.');
-            return $notify;
+            trigger_error($e->getMessage(), E_USER_ERROR);
         }
-        return $notify;
+    }
+
+    /**
+     * Error handler
+     * @param $err_level
+     * @param $msg
+     */
+    function err($errno, $msg, $file, $line) {
+        error_log("Processed error $errno in $file on line $line.  $msg");
+        $notify = new Notifier();
+        if (!(error_reporting() & $errno)) {
+            // Error code is not included in error_reporting; 
+            // fall back to built-in handler
+            return false;
+        }
+        $msg = htmlspecialchars($msg);
+        switch ($errno) {
+            case E_USER_ERROR:
+                $log_m = "Uncaught fatal error $errno on line $line of $file!  $msg.";
+
+                syslog(LOG_CRIT, $log_m);
+                echo error_msg("$log_m Please contact your System Administrator.");
+                die(1);
+
+            case E_WARNING:
+            case E_USER_WARNING:
+                syslog(LOG_WARNING, $msg);
+                $notify->store(warning_msg($msg));
+                break;
+
+            case E_NOTICE:
+            case E_USER_NOTICE:
+                syslog(LOG_NOTICE, $msg);
+                $notify->store(notice_msg($msg));
+                break;
+            default:
+                // unknown error type
+                $notify->store(error_msg("Unknown error [$errno] $msg"));
+                break;
+        }
+
+        // don't use internal error handler
+        return true;
+    }
+
+    set_error_handler('err');
+
+    // alert for oversized POSTs
+    if($_SERVER['REQUEST_METHOD'] == 'POST' 
+        && empty($_POST) 
+        && empty($_FILES) 
+        && $_SERVER['CONTENT_LENGTH'] > 0){
+            trigger_error(
+                'Failed to recieve uploaded data!  Upload was too large.',
+                E_USER_WARNING
+            );
     }
 
     // form handling
@@ -173,15 +275,9 @@
         delete_entry();
 
     } else if (isset($_POST['create'])) {
-        $notify .= create_entry();
+        create_entry();
     }
 ?>
-
-<head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Payphone Dashboard</title>
-</head>
 
 <body>
     <div id="title-block" class="title-block">
@@ -217,10 +313,7 @@
                     // close db connection
                     $db->close();
                 } catch (Exception $e) {
-                    // handle error connecting to db; notify user
-                    $notify .= error_msg('Failed to query numbers!  '
-                                        . 'Could not connect to database.  '
-                                        . 'Please contact your System Administrator.');
+                    trigger_error($e->getMessage(), E_USER_ERROR);
                 }
                 ?>
             </tbody>
@@ -235,11 +328,12 @@
     </div>
     <div id="notify-block">
         <?php 
+        $notify = new Notifier();
         // block to show user notifications
-        if ($notify !== '') {
+        if ($notify->has_notifications()) {
             // show header for context if we have notices to show
             echo "<h2>Notices</h2>";
-            echo $notify;
+            echo $notify->get();
         }
         ?>
     </div>
