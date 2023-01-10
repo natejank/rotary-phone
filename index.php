@@ -139,7 +139,7 @@ function delete_entry()
         $db = new SQLite3('phone.db', SQLITE3_OPEN_READWRITE);
         // create a prepared statement to avoid sql injection
         $stmt = $db->prepare('DELETE from numbers WHERE number = :num');
-        $stmt->bindValue(':num', $number, SQLITE3_INTEGER);
+        $stmt->bindValue(':num', $number, SQLITE3_TEXT);
         // execute prepared statement
         $result = $stmt->execute();
 
