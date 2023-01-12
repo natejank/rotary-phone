@@ -145,6 +145,10 @@ function create_entry()
 $result = true;
 $messages = new Notifier();
 
+$protocol = is_using_https() ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'];
+$homepage = "$protocol://$host/index.php";
+
 // alert for oversized POSTs
 if ($_SERVER['REQUEST_METHOD'] == 'POST'
     && empty($_POST)
@@ -167,13 +171,11 @@ if (isset($_POST['delete'])) {
 
 // if we succeeded, redirect to destination
 if ($result !== false) {
-    $protocol = is_using_https() ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-
     header('HTTP/1.1 303 See Other');
-    header("Location: $protocol://$host/index.php");
+    header("Location: $homepage");
 } else {
     // otherwise, show header and display error messages
     echo page_header('Payphone Dashboard Update');
     echo $messages->get();
+    echo "<a href=\"$homepage\">Take me home!</a>";
 }
