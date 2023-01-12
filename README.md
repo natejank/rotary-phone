@@ -37,8 +37,9 @@ Once all tools are installed, the development server can be run with
 
 ## todo
 
-- [] config file for database location
 - [] control bitrate and size of sound files
+- [] allow sorting of database entries on dashboard
+- [] allow editing dashboard entries
 
 ## Database Table Schema
 

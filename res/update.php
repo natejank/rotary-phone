@@ -1,6 +1,11 @@
 <?php
-// TODO die instead of accumulating errors
-include "../libweb/phone.php";
+/**
+ * Update database entries (add/remove) with a POST request
+ *
+ * @author Nathan Jankowski (njj3397 [at] rit [dot] edu)
+ */
+
+include '../libweb/phone.php';
 
 set_error_handler('error_handler');
 
@@ -76,7 +81,7 @@ function create_entry()
         }
     }
 
-    if (! $valid_mime) {
+    if (!$valid_mime) {
         trigger_error(
             "Invalid filetype $mime!",
             E_USER_WARNING
@@ -162,14 +167,13 @@ if (isset($_POST['delete'])) {
 
 // if we succeeded, redirect to destination
 if ($result !== false) {
-    $protocol = is_using_https() ? "https" : "http";
+    $protocol = is_using_https() ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
 
-    header("HTTP/1.1 303 See Other");
+    header('HTTP/1.1 303 See Other');
     header("Location: $protocol://$host/index.php");
+} else {
+    // otherwise, show header and display error messages
+    echo page_header('Payphone Dashboard Update');
+    echo $messages->get();
 }
-
-// otherwise, show header and display error messages
-echo page_header('Payphone Dashboard Update');
-echo $messages->get();
-?>
