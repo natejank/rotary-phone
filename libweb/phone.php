@@ -95,8 +95,9 @@ function sanitize_html($content)
  * @param String $title page title
  * @return String page header
  */
-function page_header($title) {
-return <<<HTML
+function page_header($title)
+{
+    return <<<HTML
 <!DOCTYPE html>
 <head>
     <meta charset="utf-8">
@@ -176,8 +177,10 @@ function get_cfg_location()
 {
     $CONFIG_LOCATIONS = array('/etc/payphone/config.json', 'config.json', '../config.json');
     foreach ($CONFIG_LOCATIONS as $cfg) {
-        if (file_exists($cfg))
+        if (file_exists($cfg)) {
             return $cfg;
+        }
+
     }
     return false;
 }
@@ -191,9 +194,11 @@ function get_cfg_location()
  */
 function get_config_key($key)
 {
-   $path_or_error = get_cfg_location();
-    if ($path_or_error === false)
-        throw new Exception('Could not get config file');
+    $path_or_error = get_cfg_location();
+    if ($path_or_error === false) {
+        throw new Exception('Could not get config file!');
+    }
+
     $f = file_get_contents($path_or_error);
     $j = json_decode($f, true);
     return $j[$key];
@@ -233,4 +238,3 @@ function get_db_connection($mode = SQLITE3_OPEN_READONLY)
     $db_location = get_db_location();
     return new SQLite3($db_location, $mode);
 }
-?>
