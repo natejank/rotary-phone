@@ -1,7 +1,11 @@
 <?php
-// TODO acquire db location from config file
-// TODO filter for specific filetypes; get from config file?
-include "../libweb/phone.php";
+/**
+ * Main dashboard page; list entries and allow adding/removing more
+ *
+ * @author Nathan Jankowski (njj3397 [at] rit [dot] edu)
+ */
+
+include '../libweb/phone.php';
 set_error_handler('error_handler');
 
 /**
@@ -28,6 +32,21 @@ function phone_entry($number, $filename, $description)
             </td>
         </tr>
         HTML;
+}
+
+/**
+ * Gets a list of valid filetypes for <input type="file">
+ * @return String list of valid filetypes
+ */
+function get_valid_filetypes()
+{
+    $fts = get_supported_filetypes();
+    $res = '';
+    foreach ($fts as $ft) {
+        $res .= ".{$ft['extension']},{$ft['mime']},";
+    }
+
+    return $res;
 }
 
 echo page_header('Payphone Dashboard');
@@ -66,7 +85,6 @@ try {
             sanitize_html($row['description']));
     }
 
-
     // close db connection
     $db->close();
 } catch (Exception $e) {
@@ -85,7 +103,7 @@ if ($has_rows === 0) {
     <h3>Add Entry</h3>
     <form action="update.php" method="POST" enctype="multipart/form-data">
     <input type="text" name="number" placeholder="Phone Number" pattern="^[0-9]+$" minlength=0 maxlength=10>
-    <input type="file" name="sound">
+    <input type="file" name="sound" accept="<?php echo get_valid_filetypes() ?>">
     <input type="text" name="description" placeholder="Description">
     <button type="submit" name="create">Submit</button>
     </form>
