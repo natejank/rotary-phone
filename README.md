@@ -33,7 +33,7 @@ or create an empty database using `python initialize.py`.
 ### Running Control Panel (development)
 
 Once all tools are installed, the development server can be run with
-`php --php-ini=php.ini --server=localhost:8000`
+`php --php-ini=php.ini --docroot=res/ --server=localhost:8000`
 
 ## todo
 

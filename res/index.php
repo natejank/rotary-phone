@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Payphone Dashboard</title>
-</head>
 <?php
 // TODO acquire db location from config file
 // TODO filter for specific filetypes; get from config file?
-include "phone.php";
+include "../libweb/phone.php";
 set_error_handler('error_handler');
 
 /**
@@ -36,6 +30,7 @@ function phone_entry($number, $filename, $description)
         HTML;
 }
 
+echo page_header('Payphone Dashboard');
 ?>
 
 <body>
@@ -56,7 +51,7 @@ function phone_entry($number, $filename, $description)
 <?php
 try {
     // connect to db (read only)
-    $db = new SQLite3('phone.db', SQLITE3_OPEN_READONLY);
+    $db = get_db_connection(SQLITE3_OPEN_READONLY);
 
     // get all phone numbers, file names, and descriptions
     $entries = $db->query('SELECT number, filename, description '

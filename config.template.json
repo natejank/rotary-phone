@@ -1,0 +1,20 @@
+{
+    "database_location": "/var/lib/payphone/phone.db",
+    "supported_filetypes": [
+        {
+            "extension": "mp3",
+            "mime": "audio/mpeg"
+        },
+        {
+            "extension": "wav",
+            "mime": "audio/wav"
+        },
+        {
+            "extension": "ogg",
+            "mime": "audio/ogg"
+        }
+    ],
+    "server": {
+        "root_location": ["content/"]
+    }
+}

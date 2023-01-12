@@ -1,5 +1,6 @@
 <?php
-include "phone.php";
+// TODO die instead of accumulating errors
+include "../libweb/phone.php";
 
 set_error_handler('error_handler');
 
@@ -14,7 +15,7 @@ function delete_entry()
     $number = sanitize_html($_POST['delete']);
     try {
         // connect to database
-        $db = new SQLite3('phone.db', SQLITE3_OPEN_READWRITE);
+        $db = get_db_connection(SQLITE3_OPEN_READWRITE);
         // create a prepared statement to avoid sql injection
         $stmt = $db->prepare('DELETE from numbers WHERE number = :num');
         $stmt->bindValue(':num', $number, SQLITE3_TEXT);
@@ -56,6 +57,33 @@ function create_entry()
         );
         return $result;
     }
+    // make sure filetype makes sense
+    $types_or_error = get_supported_filetypes();
+    $mime = $file['type'];
+    $valid_mime = false;
+    if ($types_or_error === false) {
+        trigger_error(
+            'Could not supported file types!',
+            E_USER_ERROR
+        );
+        return $result;
+    }
+
+    foreach ($types_or_error as $t) {
+        if ($mime == $t['mime']) {
+            $valid_mime = true;
+            break;
+        }
+    }
+
+    if (! $valid_mime) {
+        trigger_error(
+            "Invalid filetype $mime!",
+            E_USER_WARNING
+        );
+        return $result;
+    }
+
     $sound_content_unsafe = get_blob_contents($file['tmp_name']);
     $number_unsafe = $_POST['number'];
     $description_unsafe = $_POST['description'];
@@ -81,7 +109,7 @@ function create_entry()
 
     try {
         // connect to database
-        $db = new SQLite3('phone.db', SQLITE3_OPEN_READWRITE);
+        $db = get_db_connection(SQLITE3_OPEN_READWRITE);
         // create a prepared statement
         $stmt = $db->prepare('INSERT INTO numbers(number, sound, filename, description) '
             . 'VALUES (:num, :sound, :filename, :desc)');
@@ -141,6 +169,7 @@ if ($result !== false) {
     header("Location: $protocol://$host/index.php");
 }
 
-// otherwise, display error messages
+// otherwise, show header and display error messages
+echo page_header('Payphone Dashboard Update');
 echo $messages->get();
 ?>
