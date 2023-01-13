@@ -1,0 +1,55 @@
+.title-block {
+    text-align: center;
+}
+
+.note {
+    text-align: center;
+    font-style: italic;
+}
+
+.error {
+    color: red;
+}
+
+.warning {
+    color: sandybrown;
+}
+
+.notice {
+    color: forestgreen;
+}
+
+#numbers-table {
+    border-collapse: collapse;
+}
+
+#notify-block {
+    text-align: center;
+    justify-content: left;
+}
+
+#numbers-table td {
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+
+    border-width: 2px;
+    border-color: grey;
+    border-style: solid;
+
+    font-family: monospace;
+    font-size: 1.25em;
+}
+
+body {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: antiquewhite;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
