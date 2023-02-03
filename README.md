@@ -1,4 +1,12 @@
-# Rotary Payphone Hacking Project
+# Rotary Payphone Hacking Project (work in progress)
+
+This is a project to turn a rotary payphone into a device to play prerecorded
+messages when a number is dialed.  To accomplish this, we are using python on
+a single board computer to interface with the phone, which accesses recordings
+and number information stored in a SQLite database.  These entries can be
+modified and accessed from a control panel written in PHP.
+
+*currently only the PHP frontend is functional*
 
 ## Build/Development Environment
 
