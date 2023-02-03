@@ -1,4 +1,12 @@
 <?php
+/*
+ * Copyright (C) 2023 Nathan Jankowski
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 /**
  * Serve sound file from database by phone number.
  * Opens database, reads file name and content, then serves it as a document.
